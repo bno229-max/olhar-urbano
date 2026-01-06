@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Olhar Urbano</title>
+    <style>
+        :root { --primary: #10b981; --primary-hover: #059669; --bg: #f9fafb; --card: #ffffff; --accent: #2d5af7; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg); margin: 0; color: #1f2937; }
+        
+        /* Tab Navigation */
+        .nav-tabs { display: flex; background: #fff; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #e5e7eb; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .tab { flex: 1; padding: 16px; text-align: center; font-size: 0.85rem; font-weight: 700; color: #6b7280; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 0.5px; }
+        .tab.active { color: var(--accent); border-bottom: 3px solid var(--accent); }
+
+        /* Container Centralizado */
+        .view { display: none; padding: 20px; max-width: 450px; margin: 0 auto; box-sizing: border-box; }
+        .view.active { display: block; animation: slideUp 0.4s ease-out; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Header Branding */
+        .branding { text-align: center; padding: 30px 0; }
+        .branding h1 { margin: 0; font-size: 1.6rem; color: #111827; font-weight: 800; }
+        .branding p { margin: 5px 0 0; font-size: 0.85rem; color: #6b7280; font-weight: 400; }
+
+        /* Estilo dos Cards */
+        .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f3f4f6; }
+        .label-group { font-size: 0.7rem; font-weight: 800; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: block; }
+
+        /* Inputs Modernos */
+        select, input { 
+            width: 100%; border: 1px solid #e5e7eb; background: #fcfcfd; padding: 14px; border-radius: 12px; 
+            font-size: 1rem; color: #374151; box-sizing: border-box; transition: 0.2s;
+        }
+        select:focus, input:focus { outline: none; border-color: var(--accent); background: #fff; box-shadow: 0 0 0 4px rgba(45, 90, 247, 0.1); }
+
+        /* Botão de Impacto com Brilho */
+        .btn-impact { 
+            width: 100%; background: var(--primary); color: white; border: none; padding: 20px; 
+            border-radius: 18px; font-weight: 800; font-size: 1.1rem; cursor: pointer; 
+            transition: all 0.3s; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+            position: relative; overflow: hidden;
+        }
+        .btn-impact:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5); }
+        .btn-impact:active { transform: scale(0.97); }
+
+        /* Efeito de brilho leve */
+        .btn-impact::after {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg); animation: shine 3s infinite;
+        }
+        @keyframes shine { 0% { left: -100%; } 100% { left: 100%; } }
+
+        /* Dashboard */
+        #map { width: 100%; height: 55vh; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .stat-card { background: white; padding: 15px; border-radius: 18px; text-align: center; border: 1px solid #eee; }
+        .stat-card b { font-size: 1.5rem; color: var(--accent); display: block; }
+    </style>
+</head>
+<body>
+
+<nav class="nav-tabs">
+    <div class="tab active" onclick="switchTab('user')">Observar</div>
+    <div class="tab" onclick="switchTab('dash')">Impacto</div>
+</nav>
+
+<div id="user-view" class="view active">
+    <div class="branding">
+        <h1>Olhar Urbano</h1>
+        <p>Observe. Registre. Impacte.</p>
+    </div>
+
+    <div class="card">
+        <span class="label-group">1. Volume</span>
+        <label style="font-size: 0.9rem; margin-bottom: 8px; display: block;">Quantas pessoas você identificou?</label>
+        <input type="number" id="qtd" placeholder="Ex: 3" inputmode="numeric">
+    </div>
+
+    <div class="card">
+        <span class="label-group">2. Perfil</span>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+                <label style="font-size: 0.75rem; font-weight: bold;">Sexo</label>
+                <select id="sexo">
+                    <option value="" selected disabled>Escolha</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Feminino">Feminino</option>
+                    <option value="Outro">Outro</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 0.75rem; font-weight: bold;">Idade</label>
+                <select id="faixa">
+                    <option value="" selected disabled>Escolha</option>
+                    <option value="Criança">Criança</option>
+                    <option value="Adolescente">Adolescente</option>
+                    <option value="Adulto">Adulto</option>
+                    <option value="Idoso">Idoso</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <span class="label-group">3. Contexto Social</span>
+        <div style="margin-bottom: 15px;">
+            <label style="font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; display: block;">Situação de Rua</label>
+            <select id="situacao">
+                <option value="" selected disabled>Confirmar situação...</option>
+                <option value="Sim">Sim, reside no local</option>
+                <option value="Não">Não</option>
+                <option value="Passagem">Em trânsito</option>
+            </select>
+        </div>
+        <div>
+            <label style="font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; display: block;">Usando Drogas</label>
+            <select id="drogas">
+                <option value="" selected disabled>Uso visível?</option>
+                <option value="Sim">Sim</option>
+                <option value="Não">Não</option>
+            </select>
+        </div>
+    </div>
+
+    <button class="btn-impact" id="btn-save" onclick="registrar()">REGISTRAR AGORA</button>
+</div>
+
+<div id="dash-view" class="view">
+    <div class="branding">
+        <h1>Mapa de Impacto</h1>
+        <p>Visão em tempo real dos registros</p>
+    </div>
+    <div id="map"></div>
+    <div class="stats">
+        <div class="stat-card"><small>OCORRÊNCIAS</small><b id="st-reg">0</b></div>
+        <div class="stat-card"><small>PESSOAS</small><b id="st-pes">0</b></div>
+    </div>
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAyeljGisp0yk242H4s3VC_xFeBwESDrjU&libraries=visualization"></script>
+
+<script>
+    let db = JSON.parse(localStorage.getItem('olhar_urbano_v9')) || [];
+    let geo = { lat: null, lng: null };
+
+    navigator.geolocation.watchPosition(p => {
+        geo.lat = p.coords.latitude;
+        geo.lng = p.coords.longitude;
+    }, null, { enableHighAccuracy: true });
+
+    function switchTab(type) {
+        document.querySelectorAll('.tab, .view').forEach(el => el.classList.remove('active'));
+        if(type === 'user') {
+            document.querySelectorAll('.tab')[0].classList.add('active');
+            document.getElementById('user-view').classList.add('active');
+        } else {
+            document.querySelectorAll('.tab')[1].classList.add('active');
+            document.getElementById('dash-view').classList.add('active');
+            setTimeout(initMap, 100);
+        }
+    }
+
+    function registrar() {
+        const fields = ['qtd', 'sexo', 'faixa', 'situacao', 'drogas'];
+        const data = {};
+        for(let f of fields) {
+            data[f] = document.getElementById(f).value;
+            if(!data[f]) return alert("Preencha todos os campos para impactar!");
+        }
+
+        if(!geo.lat) return alert("Buscando sua localização...");
+
+        const item = { ...data, lat: geo.lat, lng: geo.lng, qtd: parseInt(data.qtd), ts: Date.now() };
+        db.push(item);
+        localStorage.setItem('olhar_urbano_v9', JSON.stringify(db));
+
+        fields.forEach(f => document.getElementById(f).value = "");
+        alert("Obrigado por Colaborar!");
+    }
+
+    function initMap() {
+        const center = (db.length > 0) ? {lat: db[db.length-1].lat, lng: db[db.length-1].lng} : {lat: -23.55, lng: -46.63};
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 14, center: center, 
+            disableDefaultUI: true,
+            styles: [{ "featureType": "poi", "stylers": [{ "visibility": "off" }] }]
+        });
+
+        const points = db.map(p => ({ location: new google.maps.LatLng(p.lat, p.lng), weight: p.qtd }));
+        new google.maps.visualization.HeatmapLayer({ 
+            data: points, 
+            map: map, 
+            radius: 40,
+            gradient: ['transparent', '#10b981', '#fbbf24', '#f59e0b', '#ef4444']
+        });
+
+        document.getElementById('st-reg').innerText = db.length;
+        document.getElementById('st-pes').innerText = db.reduce((a, b) => a + b.qtd, 0);
+    }
+</script>
+</body>
+</html>
