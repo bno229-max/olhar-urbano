@@ -3,47 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Olhar Urbano - Observe. Registre. Impacte.</title>
+    <title>Olhar Urbano - Cidadania Ativa</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
     <style>
         :root { --primary: #10b981; --primary-hover: #059669; --bg: #f9fafb; --card: #ffffff; --accent: #2d5af7; }
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg); margin: 0; color: #1f2937; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg); margin: 0; color: #1f2937; line-height: 1.5; }
         
-        /* Tab Navigation */
+        /* Navegação */
         .nav-tabs { display: flex; background: #fff; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #e5e7eb; }
-        .tab { flex: 1; padding: 16px; text-align: center; font-size: 0.85rem; font-weight: 700; color: #6b7280; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 0.5px; }
+        .tab { flex: 1; padding: 16px; text-align: center; font-size: 0.85rem; font-weight: 700; color: #6b7280; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }
         .tab.active { color: var(--accent); border-bottom: 3px solid var(--accent); }
 
         /* Container Centralizado */
-        .view { display: none; padding: 20px; max-width: 450px; margin: 0 auto; box-sizing: border-box; }
+        .view { display: none; padding: 20px; max-width: 450px; margin: 0 auto; box-sizing: border-box; text-align: center; }
         .view.active { display: block; animation: slideUp 0.4s ease-out; }
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Branding */
-        .branding { text-align: center; padding: 20px 0; }
-        .branding h1 { margin: 0; font-size: 1.6rem; color: #111827; font-weight: 800; }
-        .branding p { margin: 5px 0 0; font-size: 0.85rem; color: #6b7280; }
+        /* Branding e Contexto */
+        .branding { padding: 15px 0 10px; }
+        .branding h1 { margin: 0; font-size: 1.8rem; color: #111827; font-weight: 800; }
+        .slogan { color: var(--primary); font-weight: bold; margin-top: 5px; font-size: 0.9rem; }
 
-        /* Cards */
-        .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #f3f4f6; }
-        .label-group { font-size: 0.7rem; font-weight: 800; color: #9ca3af; text-transform: uppercase; margin-bottom: 12px; display: block; }
+        .intro-box { 
+            background: #eff6ff; padding: 20px; border-radius: 18px; margin-bottom: 25px; 
+            font-size: 0.95rem; color: #1e40af; border: 1px solid #dbeafe;
+        }
+
+        /* Cards de Formulário */
+        .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #f3f4f6; text-align: left; }
+        .label-group { font-size: 0.7rem; font-weight: 800; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: block; }
 
         select, input { 
             width: 100%; border: 1px solid #e5e7eb; background: #fcfcfd; padding: 14px; border-radius: 12px; 
-            font-size: 1rem; color: #374151; box-sizing: border-box;
+            font-size: 1rem; color: #374151; box-sizing: border-box; -webkit-appearance: none;
         }
 
-        /* Botão Verde com Brilho */
+        /* Botão de Impacto */
         .btn-impact { 
             width: 100%; background: var(--primary); color: white; border: none; padding: 20px; 
             border-radius: 18px; font-weight: 800; font-size: 1.1rem; cursor: pointer; 
             transition: all 0.3s; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
-            position: relative; overflow: hidden;
+            position: relative; overflow: hidden; margin-top: 10px;
         }
-        .btn-impact:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        .btn-impact:active { transform: scale(0.97); }
         .btn-impact::after {
             content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
             background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
@@ -51,11 +56,11 @@
         }
         @keyframes shine { 0% { left: -100%; } 100% { left: 100%; } }
 
-        /* Dashboard */
+        /* Estilos Dashboard */
         #map { width: 100%; height: 50vh; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .stat-card { background: white; padding: 15px; border-radius: 18px; text-align: center; border: 1px solid #eee; }
-        .stat-card b { font-size: 1.5rem; color: var(--accent); display: block; }
+        .stat-card b { font-size: 1.6rem; color: var(--accent); display: block; }
     </style>
 </head>
 <body>
@@ -68,18 +73,23 @@
 <div id="user-view" class="view active">
     <div class="branding">
         <h1>Olhar Urbano</h1>
-        <p>Observe. Registre. Impacte.</p>
+        <div class="slogan">Observe. Registre. Impacte.</div>
+    </div>
+
+    <div class="intro-box">
+        📍 <b>Sua cidade precisa do seu olhar.</b><br>
+        Identificou alguém em situação de vulnerabilidade ou uso de substâncias? Registre agora e ajude a gerar inteligência social para seu bairro.
     </div>
 
     <div class="card">
-        <span class="label-group">1. Volume</span>
-        <label style="font-size: 0.9rem; margin-bottom: 8px; display: block;">Quantas pessoas identificadas?</label>
+        <span class="label-group">1. Quantidade</span>
+        <label style="font-size: 0.9rem; margin-bottom: 8px; display: block;">Quantas pessoas você identificou?</label>
         <input type="number" id="qtd" placeholder="Ex: 1" inputmode="numeric">
     </div>
 
     <div class="card">
         <span class="label-group">2. Perfil</span>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
             <div>
                 <label style="font-size: 0.75rem; font-weight: bold;">Sexo</label>
                 <select id="sexo">
@@ -100,44 +110,44 @@
                 </select>
             </div>
         </div>
-    </div>
-
-    <div class="card">
-        <span class="label-group">3. Contexto</span>
         <div style="margin-bottom: 15px;">
+            <label style="font-size: 0.75rem; font-weight: bold;">Situação de Rua?</label>
             <select id="situacao">
-                <option value="" selected disabled>Situação de Rua?</option>
+                <option value="" selected disabled>Selecione...</option>
                 <option value="Sim">Sim, reside no local</option>
                 <option value="Não">Não</option>
-                <option value="Passagem">Em trânsito</option>
+                <option value="Passagem">Apenas passagem</option>
             </select>
         </div>
-        <select id="drogas">
-            <option value="" selected disabled>Uso de Drogas?</option>
-            <option value="Sim">Sim</option>
-            <option value="Não">Não</option>
-        </select>
+        <div>
+            <label style="font-size: 0.75rem; font-weight: bold;">Uso de Drogas?</label>
+            <select id="drogas">
+                <option value="" selected disabled>Uso visível?</option>
+                <option value="Sim">Sim</option>
+                <option value="Não">Não observado</option>
+            </select>
+        </div>
     </div>
 
-    <button class="btn-impact" id="btn-save" onclick="registrar()">REGISTRAR AGORA</button>
+    <button class="btn-impact" id="btn-save" onclick="registrar()">GERAR REGISTRO CIDADÃO</button>
 </div>
 
 <div id="dash-view" class="view">
     <div class="branding">
-        <h1>Mapa Coletivo</h1>
-        <p>Registros de todos os observadores</p>
+        <h1>Mapa de Impacto</h1>
+        <p style="color: #6b7280; margin-bottom: 20px;">Inteligência coletiva em tempo real</p>
     </div>
     <div id="map"></div>
     <div class="stats">
         <div class="stat-card"><small>OCORRÊNCIAS</small><b id="st-reg">0</b></div>
-        <div class="stat-card"><small>TOTAL PESSOAS</small><b id="st-pes">0</b></div>
+        <div class="stat-card"><small>VIDAS MAPEADAS</small><b id="st-pes">0</b></div>
     </div>
 </div>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAyeljGisp0yk242H4s3VC_xFeBwESDrjU&libraries=visualization"></script>
 
 <script>
-    // CONFIGURAÇÃO DO SEU FIREBASE
+    // Configurações do seu Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyCv33-vr99tYWdxdeJP4rsp39ro5M2gZNo",
         authDomain: "olhar-urbano.firebaseapp.com",
@@ -152,7 +162,6 @@
     const dbCloud = firebase.database();
 
     let geo = { lat: null, lng: null };
-    let registrosGlobais = [];
 
     navigator.geolocation.watchPosition(p => {
         geo.lat = p.coords.latitude;
@@ -176,57 +185,56 @@
         const data = {};
         for(let f of fields) {
             data[f] = document.getElementById(f).value;
-            if(!data[f]) return alert("Preencha todos os campos!");
+            if(!data[f]) return alert("Por favor, preencha todos os campos.");
         }
 
-        if(!geo.lat) return alert("Buscando sua localização...");
+        if(!geo.lat) return alert("Buscando sinal de GPS...");
 
         const btn = document.getElementById('btn-save');
         btn.disabled = true;
-        btn.innerText = "ENVIANDO À NUVEM...";
+        btn.innerText = "ENVIANDO...";
 
         const item = { ...data, lat: geo.lat, lng: geo.lng, qtd: parseInt(data.qtd), ts: Date.now() };
 
-        // SALVANDO NO FIREBASE (NUVEM)
         dbCloud.ref('ocorrencias').push(item)
             .then(() => {
-                alert("Obrigado por Colaborar!");
+                alert("Obrigado por Colaborar! Seu olhar transforma a cidade.");
                 fields.forEach(f => document.getElementById(f).value = "");
                 btn.disabled = false;
-                btn.innerText = "REGISTRAR AGORA";
+                btn.innerText = "GERAR REGISTRO CIDADÃO";
             })
             .catch(err => {
-                alert("Erro ao salvar: " + err.message);
+                alert("Erro ao conectar: " + err.message);
                 btn.disabled = false;
             });
     }
 
     function initMap() {
-        // ESCUTANDO DADOS DA NUVEM EM TEMPO REAL
         dbCloud.ref('ocorrencias').on('value', (snapshot) => {
             const data = snapshot.val();
-            registrosGlobais = data ? Object.values(data) : [];
+            const registros = data ? Object.values(data) : [];
             
-            const center = (registrosGlobais.length > 0) ? 
-                {lat: registrosGlobais[registrosGlobais.length-1].lat, lng: registrosGlobais[registrosGlobais.length-1].lng} : 
+            const center = (registros.length > 0) ? 
+                {lat: registros[registros.length-1].lat, lng: registros[registros.length-1].lng} : 
                 {lat: -23.55, lng: -46.63};
 
             const map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 13, center: center, disableDefaultUI: true
+                zoom: 14, center: center, disableDefaultUI: true,
+                styles: [{ "featureType": "poi", "stylers": [{ "visibility": "off" }] }]
             });
 
-            const points = registrosGlobais.map(p => ({ 
+            const points = registros.map(p => ({ 
                 location: new google.maps.LatLng(p.lat, p.lng), 
                 weight: p.qtd 
             }));
 
             new google.maps.visualization.HeatmapLayer({ 
-                data: points, map: map, radius: 40,
+                data: points, map: map, radius: 45,
                 gradient: ['transparent', '#10b981', '#fbbf24', '#ef4444']
             });
 
-            document.getElementById('st-reg').innerText = registrosGlobais.length;
-            document.getElementById('st-pes').innerText = registrosGlobais.reduce((a, b) => a + (b.qtd || 0), 0);
+            document.getElementById('st-reg').innerText = registros.length;
+            document.getElementById('st-pes').innerText = registros.reduce((a, b) => a + (b.qtd || 0), 0);
         });
     }
 </script>
